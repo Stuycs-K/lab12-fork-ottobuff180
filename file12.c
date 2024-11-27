@@ -14,15 +14,14 @@
 void prog(){
   printf("%ld about to create 2 child processes.\n", (long) getpid());
   pid_t p;
+  int x = randomint() % 5 + 1;
   p = fork();
-  int x = 0;
   if(p<0){
     perror("fork fail\n");
     exit(1);
   } else if ( p == 0){
     long childp = (long) getpid();
     
-    x = randomint() % 5 + 1;
     printf("%ld %dsec\n", childp, x);
     
     for (int c = 0; c < x; c++){
@@ -32,31 +31,31 @@ void prog(){
     printf("%ld finished after %d seconds.\n", childp, x);
   }
   else{
-    printf("x = %d\n", x);
-    printf("Main Process %ld is done. Child %ld slept for %d sec\n", (long) getpid(), (long) p, x);
     pid_t p2;
-    int status;
-    p2 = wait(WEXITSTATUS(status));
+    int x2 = randomint() % 5 + 1;
     p2 = fork();
-    int y = 0;
-    if(p<0){
+    if(p2<0){
       perror("fork fail\n");
       exit(1);
-    } else if ( p == 0){
-      long childp2 = (long) getpid();
+    } else if ( p2 == 0){
+      long childp = (long) getpid();
       
-      y = randomint() % 5 + 1;
-      printf("%ld %dsec\n", childp2, y);
+      printf("%ld %dsec\n", childp, x2);
       
-      for (int c = 0; c < y; c++){
+      for (int c = 0; c < x2; c++){
         sleep(1);
       }
       
-      printf("%ld finished after %d seconds.\n", childp2, y);
+      printf("%ld finished after %d seconds.\n", childp, x2);
     }
-    else{
-      printf("y = %d\n", y);
-      printf("Main Process %ld is done. Child %ld slept for %d sec\n", (long) getpid(), (long) p, y);
+    else {
+      int status;
+      pid_t p3 = wait(WEXITSTATUS(status));
+      int y = x;
+      if(p3 == p2){
+        y = x2;
+      }
+      printf("Main Process %ld is done. Child %ld slept for %d sec\n", (long) getpid(), (long) p3, y);
     }
   }
 }
@@ -70,5 +69,8 @@ int randomint(){
   
   close(r_file);
   
+  if (buff < 0){
+    return -buff;
+  }
   return buff;
 }
